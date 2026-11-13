@@ -21,12 +21,6 @@ class Config:
     ANTHROPIC_API_KEY = os.getenv('ANTHROPIC_API_KEY', '')
     STABILITY_API_KEY = os.getenv('STABILITY_API_KEY', '')
     REPLICATE_API_TOKEN = os.getenv('REPLICATE_API_TOKEN', '')
-    OPENROUTER_API_KEY = os.getenv('OPENROUTER_API_KEY', '')
-    OPENROUTER_MODEL = os.getenv('OPENROUTER_MODEL', 'openrouter/auto')
-    
-    # NeoCortex Integration
-    NEOCORTEX_ENDPOINT = os.getenv('NEOCORTEX_ENDPOINT', 'http://127.0.0.1:11434')
-    NEOCORTEX_CORE_SOCK = os.getenv('NEOCORTEX_CORE_SOCK', '')
     
     # Default providers
     DEFAULT_AI_PROVIDER = os.getenv('DEFAULT_AI_PROVIDER', 'duckduckgo')
