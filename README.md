@@ -1,4 +1,4 @@
-# AI Integration Tool
+# 🤖 PilotHub — AI Integration Tool
 
 This repository provides a unified interface to interact with multiple AI providers, including ChatGPT (OpenAI), DeepSeek, Grok (xAI), Google Gemini, OpenRouter, DuckDuckGo, and the NeoCortex local intelligence layer.
 
