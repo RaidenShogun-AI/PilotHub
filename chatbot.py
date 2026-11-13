@@ -10,6 +10,7 @@ from duckduckgo_provider import DuckDuckGoProvider
 from gemini_provider import GeminiProvider
 from grok_provider import GrokProvider
 from neocortex_provider import NeoCortexProvider
+from openrouter_provider import OpenRouterProvider
 from openai_provider import DALLEGenerator, OpenAIProvider
 from video_provider import ReplicateVideoGenerator, SimpleVideoGenerator
 
@@ -38,6 +39,12 @@ class UnifiedAIChatbot:
 
         if Config.XAI_API_KEY:
             self.providers['grok'] = GrokProvider(Config.XAI_API_KEY)
+
+        if Config.OPENROUTER_API_KEY:
+            self.providers['openrouter'] = OpenRouterProvider(
+                Config.OPENROUTER_API_KEY,
+                model=Config.OPENROUTER_MODEL
+            )
 
         # DuckDuckGo is free, always add it
         self.providers['duckduckgo'] = DuckDuckGoProvider()
