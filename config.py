@@ -22,6 +22,10 @@ class Config:
     STABILITY_API_KEY = os.getenv('STABILITY_API_KEY', '')
     REPLICATE_API_TOKEN = os.getenv('REPLICATE_API_TOKEN', '')
     
+    # NeoCortex Integration
+    NEOCORTEX_ENDPOINT = os.getenv('NEOCORTEX_ENDPOINT', 'http://127.0.0.1:11434')
+    NEOCORTEX_CORE_SOCK = os.getenv('NEOCORTEX_CORE_SOCK', '')
+    
     # Default providers
     DEFAULT_AI_PROVIDER = os.getenv('DEFAULT_AI_PROVIDER', 'duckduckgo')
     DEFAULT_IMAGE_GENERATOR = os.getenv('DEFAULT_IMAGE_GENERATOR', 'dalle')

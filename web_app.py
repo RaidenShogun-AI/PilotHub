@@ -2,10 +2,13 @@
 """
 Web Interface for the Unified AI Chatbot
 """
+import json
 import os
+import time
+import uuid
 from pathlib import Path
 
-from flask import Flask, jsonify, render_template, request, send_from_directory
+from flask import Flask, Response, jsonify, render_template, request, send_from_directory
 
 from chatbot import UnifiedAIChatbot
 from config import Config
@@ -57,6 +60,105 @@ def switch_provider():
         return jsonify({'success': True, 'provider': provider})
     else:
         return jsonify({'success': False, 'error': 'Provider not available'}), 400
+
+
+@app.route('/v1/models', methods=['GET'])
+@app.route('/models', methods=['GET'])
+def list_models():
+    """List available models in OpenAI format for NeoCortex and external clients"""
+    bot = get_chatbot()
+    providers = bot.list_providers()
+    model_data = [
+        {
+            "id": p,
+            "object": "model",
+            "created": int(time.time()),
+            "owned_by": "pilothub"
+        }
+        for p in providers
+    ]
+    return jsonify({"object": "list", "data": model_data})
+
+
+@app.route('/v1/chat/completions', methods=['POST'])
+@app.route('/chat/completions', methods=['POST'])
+def chat_completions():
+    """OpenAI-compatible chat completion endpoint with SSE streaming support"""
+    data = request.json or {}
+    messages = data.get('messages', [])
+    requested_model = data.get('model', '')
+    stream = data.get('stream', False)
+
+    bot = get_chatbot()
+    provider = requested_model if requested_model in bot.list_providers() else bot.current_provider
+
+    if not messages:
+        return jsonify({'error': {'message': 'No messages provided', 'type': 'invalid_request_error'}}), 400
+
+    last_user_message = ""
+    for msg in reversed(messages):
+        if msg.get('role') == 'user':
+            last_user_message = msg.get('content', '')
+            break
+
+    try:
+        response_text = bot.chat(last_user_message, provider=provider)
+    except Exception as e:
+        return jsonify({'error': {'message': str(e), 'type': 'server_error'}}), 500
+
+    request_id = f"chatcmpl-{uuid.uuid4()}"
+    created_ts = int(time.time())
+
+    if stream:
+        def generate_sse():
+            chunk = {
+                "id": request_id,
+                "object": "chat.completion.chunk",
+                "created": created_ts,
+                "model": provider,
+                "choices": [{
+                    "index": 0,
+                    "delta": {"content": response_text},
+                    "finish_reason": None
+                }]
+            }
+            yield f"data: {json.dumps(chunk)}\n\n"
+
+            finish_chunk = {
+                "id": request_id,
+                "object": "chat.completion.chunk",
+                "created": created_ts,
+                "model": provider,
+                "choices": [{
+                    "index": 0,
+                    "delta": {},
+                    "finish_reason": "stop"
+                }]
+            }
+            yield f"data: {json.dumps(finish_chunk)}\n\n"
+            yield "data: [DONE]\n\n"
+
+        return Response(generate_sse(), mimetype='text/event-stream')
+
+    return jsonify({
+        "id": request_id,
+        "object": "chat.completion",
+        "created": created_ts,
+        "model": provider,
+        "choices": [{
+            "index": 0,
+            "message": {
+                "role": "assistant",
+                "content": response_text
+            },
+            "finish_reason": "stop"
+        }],
+        "usage": {
+            "prompt_tokens": len(last_user_message.split()),
+            "completion_tokens": len(response_text.split()),
+            "total_tokens": len(last_user_message.split()) + len(response_text.split())
+        }
+    })
 
 
 @app.route('/api/chat', methods=['POST'])

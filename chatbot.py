@@ -9,6 +9,7 @@ from deepseek_provider import DeepSeekProvider
 from duckduckgo_provider import DuckDuckGoProvider
 from gemini_provider import GeminiProvider
 from grok_provider import GrokProvider
+from neocortex_provider import NeoCortexProvider
 from openai_provider import DALLEGenerator, OpenAIProvider
 from video_provider import ReplicateVideoGenerator, SimpleVideoGenerator
 
@@ -40,6 +41,12 @@ class UnifiedAIChatbot:
 
         # DuckDuckGo is free, always add it
         self.providers['duckduckgo'] = DuckDuckGoProvider()
+
+        # NeoCortex local-first AI intelligence layer
+        self.providers['neocortex'] = NeoCortexProvider(
+            socket_path=Config.NEOCORTEX_CORE_SOCK,
+            http_endpoint=Config.NEOCORTEX_ENDPOINT
+        )
         
         # Initialize image generators
         if Config.OPENAI_API_KEY:

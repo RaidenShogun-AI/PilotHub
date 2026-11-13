@@ -16,7 +16,18 @@ if [ $? -ne 0 ]; then
 fi
 
 echo ""
+# Virtual environment setup
+if [ -z "$VIRTUAL_ENV" ]; then
+    if [ ! -d ".venv" ]; then
+        echo "Creating virtual environment in .venv..."
+        python3 -m venv .venv
+    fi
+    echo "Activating virtual environment..."
+    source .venv/bin/activate
+fi
+
 echo "Installing dependencies..."
+pip install --upgrade pip
 pip install -r requirements.txt
 
 if [ $? -ne 0 ]; then
@@ -47,8 +58,9 @@ echo "Setup Complete!"
 echo "======================================"
 echo ""
 echo "Next steps:"
-echo "1. Edit .env and add your API keys"
-echo "2. Run 'python test_chatbot.py' to verify setup"
-echo "3. Run 'python cli.py' for CLI interface"
-echo "4. Run 'python web_app.py' for web interface"
+echo "1. Activate venv: 'source .venv/bin/activate'"
+echo "2. Edit .env and add your API keys"
+echo "3. Run 'python test_chatbot.py' to verify setup"
+echo "4. Run 'python cli.py' for CLI interface"
+echo "5. Run 'python web_app.py' for web interface"
 echo ""
