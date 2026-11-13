@@ -17,6 +17,8 @@ def test_imports():
         from base_provider import AIProvider, ImageGenerator, VideoGenerator  # noqa: F401
         from openai_provider import OpenAIProvider, DALLEGenerator  # noqa: F401
         from gemini_provider import GeminiProvider  # noqa: F401
+        from neocortex_provider import NeoCortexProvider  # noqa: F401
+        from openrouter_provider import OpenRouterProvider  # noqa: F401
         from video_provider import SimpleVideoGenerator  # noqa: F401
         from chatbot import UnifiedAIChatbot  # noqa: F401
         print("✓ All imports successful")
@@ -82,6 +84,8 @@ def test_file_structure():
     required_files = [
         'config.py',
         'base_provider.py',
+        'neocortex_provider.py',
+        'openrouter_provider.py',
         'openai_provider.py',
         'gemini_provider.py',
         'video_provider.py',
